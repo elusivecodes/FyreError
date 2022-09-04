@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Fyre\Error;
 
 use
-    Exception,
     Fyre\Error\Exceptions\ErrorException,
     Fyre\Error\Exceptions\FatalErrorException,
     Fyre\Log\Log,
@@ -60,6 +59,8 @@ abstract class ErrorHandler
      */
     public static function handle(Throwable $exception): ClientResponse
     {
+        $hasException = !!static::$exception;
+
         static::$exception = $exception;
 
         if (static::$log) {
@@ -71,16 +72,20 @@ abstract class ErrorHandler
         try {
             $code = $exception->getCode();    
             $response->setStatusCode($code);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $response->setStatusCode(500);
         }
 
-        $route = Router::getErrorRoute();
+        try {
+            $route = Router::getErrorRoute();
 
-        if ($route) {
+            if (!$route) {
+                throw $exception;
+            }
+
             $response = $route->process(new ServerRequest, $response);
-        } else {
-            $response->setBody('<pre>'.$exception.'</pre>');
+        } catch (Throwable $e) {
+            $response->setBody('<pre>'.$e.'</pre>');
         }
 
         return $response;

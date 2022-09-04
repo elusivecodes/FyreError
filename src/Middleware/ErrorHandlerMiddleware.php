@@ -11,36 +11,11 @@ use
     Fyre\Server\ServerRequest,
     Throwable;
 
-use const
-    E_ALL;
-
-use function
-    array_replace_recursive;
-
 /**
  * ErrorHandlerMiddleware
  */
 class ErrorHandlerMiddleware extends Middleware
 {
-
-    protected static array $defaults = [
-        'level' => E_ALL,
-        'log' => true,
-        'register' => true
-    ];
-
-    /**
-     * New ErrorHandlerMiddleware constructor.
-     * @param array $options Options for the middleware.
-     */
-    public function __construct(array $options = [])
-    {
-        $options = array_replace_recursive(static::$defaults, $options);
-
-        if ($options['register']) {
-            ErrorHandler::register($options);
-        }
-    }
 
     /**
      * Process a ServerRequest.
