@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace Fyre\Error\Middleware;
 
-use
-    Fyre\Error\ErrorHandler,
-    Fyre\Middleware\Middleware,
-    Fyre\Middleware\RequestHandler,
-    Fyre\Server\ClientResponse,
-    Fyre\Server\ServerRequest,
-    Throwable;
+use Fyre\Error\ErrorHandler;
+use Fyre\Middleware\Middleware;
+use Fyre\Middleware\RequestHandler;
+use Fyre\Server\ClientResponse;
+use Fyre\Server\ServerRequest;
+use Throwable;
 
 /**
  * ErrorHandlerMiddleware

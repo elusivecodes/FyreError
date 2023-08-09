@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Fyre\Error\Exceptions;
 
-use
-    RuntimeException,
-    Throwable;
+use RuntimeException;
+use Throwable;
 
 /**
  * Exception

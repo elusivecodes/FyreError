@@ -3,29 +3,27 @@ declare(strict_types=1);
 
 namespace Fyre\Error;
 
-use
-    Fyre\Error\Exceptions\ErrorException,
-    Fyre\Error\Exceptions\FatalErrorException,
-    Fyre\Log\Log,
-    Fyre\Router\Router,
-    Fyre\Server\ClientResponse,
-    Fyre\Server\ServerRequest,
-    Throwable;
+use Fyre\Console\Console;
+use Fyre\Error\Exceptions\ErrorException;
+use Fyre\Log\Log;
+use Fyre\Router\Router;
+use Fyre\Server\ClientResponse;
+use Fyre\Server\ServerRequest;
+use Throwable;
 
-use const
-    E_ERROR,
-    E_PARSE,
-    E_USER_ERROR;
+use const E_ERROR;
+use const E_PARSE;
+use const E_USER_ERROR;
+use const PHP_SAPI;
 
-use function
-    array_key_exists,
-    error_get_last,
-    error_reporting,
-    in_array,
-    is_array,
-    register_shutdown_function,
-    set_error_handler,
-    set_exception_handler;
+use function array_key_exists;
+use function error_get_last;
+use function error_reporting;
+use function in_array;
+use function is_array;
+use function register_shutdown_function;
+use function set_error_handler;
+use function set_exception_handler;
 
 /**
  * ErrorHandler
@@ -43,6 +41,16 @@ abstract class ErrorHandler
 
     protected static bool $log = false;
 
+    protected static bool $cli = true;
+
+    /**
+     * Disable CLI output.
+     */
+    public static function disableCli(): void
+    {
+        static::$cli = false;
+    }
+
     /**
      * Get the current Exception.
      * @return Throwable|null The current Exception.
@@ -55,9 +63,9 @@ abstract class ErrorHandler
     /**
      * Handle an Exception.
      * @param Throwable $exception The exception.
-     * @return ClientResponse The ClientResponse.
+     * @return ClientResponse|null The ClientResponse.
      */
-    public static function handle(Throwable $exception): ClientResponse
+    public static function handle(Throwable $exception): ClientResponse|null
     {
         $hasException = !!static::$exception;
 
@@ -67,13 +75,19 @@ abstract class ErrorHandler
             Log::error((string) $exception);
         }
 
-        $response = new ClientResponse;
+        if (static::$cli && PHP_SAPI === 'cli') {
+            Console::error((string) $exception);
+
+            return null;
+        }
+
+        $response = new ClientResponse();
 
         try {
             $code = $exception->getCode();    
-            $response->setStatusCode($code);
+            $response = $response->setStatusCode($code);
         } catch (Throwable $e) {
-            $response->setStatusCode(500);
+            $response = $response->setStatusCode(500);
         }
 
         try {
@@ -83,9 +97,9 @@ abstract class ErrorHandler
                 throw $exception;
             }
 
-            $response = $route->process(new ServerRequest, $response);
+            $response = $route->process(new ServerRequest(), $response);
         } catch (Throwable $e) {
-            $response->setBody('<pre>'.$e.'</pre>');
+            $response = $response->setBody('<pre>'.$e.'</pre>');
         }
 
         return $response;

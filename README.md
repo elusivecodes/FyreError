@@ -1,6 +1,6 @@
 # FyreError
 
-**FyreError** is a free, error handling library for *PHP*.
+**FyreError** is a free, open-source error handling library for *PHP*.
 
 
 ## Table Of Contents
@@ -72,12 +72,8 @@ ErrorHandler::render($exception);
 use Fyre\Error\Middleware\ErrorHandlerMiddleware;
 ```
 
-- `$options` is an array containing options for the middleware.
-    - `log` is a boolean indicating whether to log errors, and will default to *true*.
-    - `level` is an integer representing the `error_reporting` level, and will default to *E_ALL*.
-
 ```php
-$middleware = new ErrorHandlerMiddleware($options);
+$middleware = new ErrorHandlerMiddleware();
 ```
 
 **Process**

@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Tests\Mock;
 
-use
-    Fyre\Error\Exceptions\Exception,
-    Fyre\Middleware\Middleware,
-    Fyre\Middleware\RequestHandler,
-    Fyre\Server\ClientResponse,
-    Fyre\Server\ServerRequest;
+use Fyre\Error\Exceptions\Exception;
+use Fyre\Middleware\Middleware;
+use Fyre\Middleware\RequestHandler;
+use Fyre\Server\ClientResponse;
+use Fyre\Server\ServerRequest;
 
 /**
  * ExceptionMiddleware

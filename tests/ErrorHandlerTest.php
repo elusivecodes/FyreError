@@ -3,22 +3,21 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\Error\Exceptions\BadRequestException,
-    Fyre\Error\Exceptions\ConflictException,
-    Fyre\Error\Exceptions\Exception,
-    Fyre\Error\Exceptions\ForbiddenException,
-    Fyre\Error\Exceptions\GoneException,
-    Fyre\Error\Exceptions\InternalServerException,
-    Fyre\Error\Exceptions\MethodNotAllowedException,
-    Fyre\Error\Exceptions\NotAcceptableException,
-    Fyre\Error\Exceptions\NotFoundException,
-    Fyre\Error\Exceptions\NotImplementedException,
-    Fyre\Error\Exceptions\ServiceUnavailableException,
-    Fyre\Error\Exceptions\UnauthorizedException,
-    Fyre\Error\ErrorHandler,
-    Fyre\Server\ClientResponse,
-    PHPUnit\Framework\TestCase;
+use Fyre\Error\Exceptions\BadRequestException;
+use Fyre\Error\Exceptions\ConflictException;
+use Fyre\Error\Exceptions\Exception;
+use Fyre\Error\Exceptions\ForbiddenException;
+use Fyre\Error\Exceptions\GoneException;
+use Fyre\Error\Exceptions\InternalServerException;
+use Fyre\Error\Exceptions\MethodNotAllowedException;
+use Fyre\Error\Exceptions\NotAcceptableException;
+use Fyre\Error\Exceptions\NotFoundException;
+use Fyre\Error\Exceptions\NotImplementedException;
+use Fyre\Error\Exceptions\ServiceUnavailableException;
+use Fyre\Error\Exceptions\UnauthorizedException;
+use Fyre\Error\ErrorHandler;
+use Fyre\Server\ClientResponse;
+use PHPUnit\Framework\TestCase;
 
 final class ErrorHandlerTest extends TestCase
 {
@@ -46,7 +45,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testBadRequest()
     {
-        $response = ErrorHandler::handle(new BadRequestException);
+        $response = ErrorHandler::handle(new BadRequestException());
 
         $this->assertSame(
             400,
@@ -56,7 +55,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testConflict()
     {
-        $response = ErrorHandler::handle(new ConflictException);
+        $response = ErrorHandler::handle(new ConflictException());
 
         $this->assertSame(
             409,
@@ -66,7 +65,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testForbidden()
     {
-        $response = ErrorHandler::handle(new ForbiddenException);
+        $response = ErrorHandler::handle(new ForbiddenException());
 
         $this->assertSame(
             403,
@@ -76,7 +75,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testGone()
     {
-        $response = ErrorHandler::handle(new GoneException);
+        $response = ErrorHandler::handle(new GoneException());
 
         $this->assertSame(
             410,
@@ -86,7 +85,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testInternalServer()
     {
-        $response = ErrorHandler::handle(new InternalServerException);
+        $response = ErrorHandler::handle(new InternalServerException());
 
         $this->assertSame(
             500,
@@ -96,7 +95,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testMethodNotAllowed()
     {
-        $response = ErrorHandler::handle(new MethodNotAllowedException);
+        $response = ErrorHandler::handle(new MethodNotAllowedException());
 
         $this->assertSame(
             405,
@@ -106,7 +105,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testNotAcceptable()
     {
-        $response = ErrorHandler::handle(new NotAcceptableException);
+        $response = ErrorHandler::handle(new NotAcceptableException());
 
         $this->assertSame(
             406,
@@ -116,7 +115,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testNotFound()
     {
-        $response = ErrorHandler::handle(new NotFoundException);
+        $response = ErrorHandler::handle(new NotFoundException());
 
         $this->assertSame(
             404,
@@ -126,7 +125,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testNotImplemented()
     {
-        $response = ErrorHandler::handle(new NotImplementedException);
+        $response = ErrorHandler::handle(new NotImplementedException());
 
         $this->assertSame(
             501,
@@ -136,7 +135,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testServiceUnavailable()
     {
-        $response = ErrorHandler::handle(new ServiceUnavailableException);
+        $response = ErrorHandler::handle(new ServiceUnavailableException());
 
         $this->assertSame(
             503,
@@ -146,7 +145,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testUnauthorized()
     {
-        $response = ErrorHandler::handle(new UnauthorizedException);
+        $response = ErrorHandler::handle(new UnauthorizedException());
 
         $this->assertSame(
             401,
