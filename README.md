@@ -42,7 +42,7 @@ $exception = ErrorHandler::getException();
 Handle an *Exception*.
 
 ```php
-ErrorHandler::handle($exception);
+$response = ErrorHandler::handle($exception);
 ```
 
 **Register**
