@@ -77,8 +77,7 @@ abstract class ErrorHandler
 
         if (static::$cli && PHP_SAPI === 'cli') {
             Console::error((string) $exception);
-
-            return null;
+            exit;
         }
 
         $response = new ClientResponse();
