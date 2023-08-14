@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 final class ErrorHandlerTest extends TestCase
 {
 
-    public function testHandle()
+    public function testHandle(): void
     {
         $exception = new Exception('Error');
         $response = ErrorHandler::handle($exception);
@@ -43,7 +43,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testBadRequest()
+    public function testBadRequest(): void
     {
         $response = ErrorHandler::handle(new BadRequestException());
 
@@ -53,7 +53,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testConflict()
+    public function testConflict(): void
     {
         $response = ErrorHandler::handle(new ConflictException());
 
@@ -63,7 +63,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testForbidden()
+    public function testForbidden(): void
     {
         $response = ErrorHandler::handle(new ForbiddenException());
 
@@ -73,7 +73,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testGone()
+    public function testGone(): void
     {
         $response = ErrorHandler::handle(new GoneException());
 
@@ -83,7 +83,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testInternalServer()
+    public function testInternalServer(): void
     {
         $response = ErrorHandler::handle(new InternalServerException());
 
@@ -93,7 +93,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testMethodNotAllowed()
+    public function testMethodNotAllowed(): void
     {
         $response = ErrorHandler::handle(new MethodNotAllowedException());
 
@@ -103,7 +103,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testNotAcceptable()
+    public function testNotAcceptable(): void
     {
         $response = ErrorHandler::handle(new NotAcceptableException());
 
@@ -113,7 +113,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testNotFound()
+    public function testNotFound(): void
     {
         $response = ErrorHandler::handle(new NotFoundException());
 
@@ -123,7 +123,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testNotImplemented()
+    public function testNotImplemented(): void
     {
         $response = ErrorHandler::handle(new NotImplementedException());
 
@@ -133,7 +133,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testServiceUnavailable()
+    public function testServiceUnavailable(): void
     {
         $response = ErrorHandler::handle(new ServiceUnavailableException());
 
@@ -143,7 +143,7 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testUnauthorized()
+    public function testUnauthorized(): void
     {
         $response = ErrorHandler::handle(new UnauthorizedException());
 
