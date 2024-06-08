@@ -67,8 +67,6 @@ abstract class ErrorHandler
      */
     public static function handle(Throwable $exception): ClientResponse|null
     {
-        $hasException = !!static::$exception;
-
         static::$exception = $exception;
 
         if (static::$log) {
