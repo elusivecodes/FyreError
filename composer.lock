@@ -470,16 +470,16 @@
         },
         {
             "name": "fyre/router",
-            "version": "v5.0.1",
+            "version": "v5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreRouter.git",
-                "reference": "8bbefd5a759e6884b167a40319fa860f2403d15f"
+                "reference": "813d36f2a3a297624b0567b5fb5bb8192dc9c7ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreRouter/zipball/8bbefd5a759e6884b167a40319fa860f2403d15f",
-                "reference": "8bbefd5a759e6884b167a40319fa860f2403d15f",
+                "url": "https://api.github.com/repos/elusivecodes/FyreRouter/zipball/813d36f2a3a297624b0567b5fb5bb8192dc9c7ca",
+                "reference": "813d36f2a3a297624b0567b5fb5bb8192dc9c7ca",
                 "shasum": ""
             },
             "require": {
@@ -509,9 +509,9 @@
             "description": "A URL routing library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreRouter/issues",
-                "source": "https://github.com/elusivecodes/FyreRouter/tree/v5.0.1"
+                "source": "https://github.com/elusivecodes/FyreRouter/tree/v5.0.2"
             },
-            "time": "2024-06-07T13:05:51+00:00"
+            "time": "2024-06-09T06:28:29+00:00"
         },
         {
             "name": "fyre/server",
