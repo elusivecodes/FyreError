@@ -94,7 +94,7 @@ abstract class ErrorHandler
                 throw $exception;
             }
 
-            $response = $route->process(new ServerRequest(), $response);
+            $response = $route->process(ServerRequest::instance(), $response);
         } catch (Throwable $e) {
             $response = $response->setBody('<pre>'.$e.'</pre>');
         }

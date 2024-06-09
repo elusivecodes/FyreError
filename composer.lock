@@ -515,16 +515,16 @@
         },
         {
             "name": "fyre/server",
-            "version": "v3.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreServer.git",
-                "reference": "24b9fcbc64b0c89c74fd05f6204e6cfdb1742c2a"
+                "reference": "e405b1de604da959524ee6e79a2789d764be7274"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreServer/zipball/24b9fcbc64b0c89c74fd05f6204e6cfdb1742c2a",
-                "reference": "24b9fcbc64b0c89c74fd05f6204e6cfdb1742c2a",
+                "url": "https://api.github.com/repos/elusivecodes/FyreServer/zipball/e405b1de604da959524ee6e79a2789d764be7274",
+                "reference": "e405b1de604da959524ee6e79a2789d764be7274",
                 "shasum": ""
             },
             "require": {
@@ -558,9 +558,9 @@
             "description": "A HTTP server request/response library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreServer/issues",
-                "source": "https://github.com/elusivecodes/FyreServer/tree/v3.0"
+                "source": "https://github.com/elusivecodes/FyreServer/tree/v3.0.1"
             },
-            "time": "2024-06-02T04:27:34+00:00"
+            "time": "2024-06-09T00:51:06+00:00"
         },
         {
             "name": "fyre/uri",
