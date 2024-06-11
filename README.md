@@ -37,6 +37,14 @@ Get the current *Exception*.
 $exception = ErrorHandler::getException();
 ```
 
+**Get Renderer**
+
+Get the error renderer.
+
+```php
+$renderer = ErrorHandler::getRenderer();
+```
+
 **Handle**
 
 Handle an *Exception*.
@@ -64,6 +72,18 @@ Render an *Exception*.
 ```php
 ErrorHandler::render($exception);
 ```
+
+**Set Renderer**
+
+Set the error renderer.
+
+- `$renderer` is a *Closure* that accepts an *Exception* as the first argument.
+
+```php
+ErrorHandler::setRenderer($renderer);
+```
+
+The renderer should return a *ClientResponse* or a string.
 
 
 ## Middleware

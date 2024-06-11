@@ -15,11 +15,9 @@ final class ErrorHandlerMiddlewareTest extends TestCase
 
     public function testException(): void
     {
-        $middleware = new ErrorHandlerMiddleware();
-
         $queue = new MiddlewareQueue();
-        $queue->add($middleware);
-        $queue->add(new ExceptionMiddleware());
+        $queue->add(ErrorHandlerMiddleware::class);
+        $queue->add(ExceptionMiddleware::class);
 
         $handler = new RequestHandler($queue);
         $request = new ServerRequest();

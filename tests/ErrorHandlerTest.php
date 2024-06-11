@@ -18,9 +18,36 @@ use Fyre\Error\Exceptions\UnauthorizedException;
 use Fyre\Error\ErrorHandler;
 use Fyre\Server\ClientResponse;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 final class ErrorHandlerTest extends TestCase
 {
+
+    public function testRenderer(): void
+    {
+        $ran = false;
+        $renderer = function(Throwable $exception) use (&$ran): string {
+            $ran = true;
+            return $exception->getMessage();
+        };
+
+        ErrorHandler::setRenderer($renderer);
+
+        $this->assertSame(
+            $renderer,
+            ErrorHandler::getRenderer()
+        );
+
+        $exception = new Exception('Error');
+        $response = ErrorHandler::handle($exception);
+
+        $this->assertTrue($ran);
+
+        $this->assertSame(
+            'Error',
+            $response->getBody()
+        );
+    }
 
     public function testHandle(): void
     {
@@ -151,6 +178,11 @@ final class ErrorHandlerTest extends TestCase
             401,
             $response->getStatusCode()
         );
+    }
+
+    protected function tearDown(): void
+    {
+        ErrorHandler::setRenderer(null);
     }
 
 }

@@ -22,7 +22,6 @@
     "require": {
         "fyre/console": "^3.0",
         "fyre/middleware": "^2.0",
-        "fyre/router": "^5.0",
         "fyre/server": "^3.0",
         "fyre/log": "^3.0"
     },

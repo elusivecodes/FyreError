@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Fyre\Error;
 
+use Closure;
 use Fyre\Console\Console;
 use Fyre\Error\Exceptions\ErrorException;
 use Fyre\Log\Log;
-use Fyre\Router\Router;
 use Fyre\Server\ClientResponse;
-use Fyre\Server\ServerRequest;
 use Throwable;
 
 use const E_ERROR;
@@ -17,6 +16,7 @@ use const E_USER_ERROR;
 use const PHP_SAPI;
 
 use function array_key_exists;
+use function call_user_func;
 use function error_get_last;
 use function error_reporting;
 use function in_array;
@@ -38,6 +38,8 @@ abstract class ErrorHandler
     ];
 
     protected static Throwable|null $exception = null;
+
+    protected static Closure|null $renderer = null;
 
     protected static bool $log = false;
 
@@ -61,6 +63,15 @@ abstract class ErrorHandler
     }
 
     /**
+     * Get the error renderer.
+     * @return Closure|null The error renderer.
+     */
+    public static function getRenderer(): Closure|null
+    {
+        return static::$renderer;
+    }
+
+    /**
      * Handle an Exception.
      * @param Throwable $exception The exception.
      * @return ClientResponse|null The ClientResponse.
@@ -78,31 +89,29 @@ abstract class ErrorHandler
             exit;
         }
 
-        $response = new ClientResponse();
+        try {
+            if (!static::$renderer) {
+                throw $exception;
+            }
+
+            $result = call_user_func(static::$renderer, $exception);
+
+            if ($result instanceof ClientResponse) {
+                $response = $result;
+            } else {
+                $response = new ClientResponse();
+                $response = $response->setBody((string) $result);
+            }
+        } catch (Throwable $e) {
+            $response = new ClientResponse();
+            $response = $response->setBody('<pre>'.$e.'</pre>');
+        }
 
         try {
             $code = $exception->getCode();    
             $response = $response->setStatusCode($code);
         } catch (Throwable $e) {
             $response = $response->setStatusCode(500);
-        }
-
-        try {
-            $route = Router::getErrorRoute();
-
-            if (!$route) {
-                throw $exception;
-            }
-
-            $result = $route->process(ServerRequest::instance(), $response);
-
-            if ($result instanceof ClientResponse) {
-                $response = $result;
-            } else {
-                $response = $response->setBody((string) $result);
-            }
-        } catch (Throwable $e) {
-            $response = $response->setBody('<pre>'.$e.'</pre>');
         }
 
         return $response;
@@ -153,6 +162,15 @@ abstract class ErrorHandler
     {
         static::handle($exception)->send();
         exit;
+    }
+
+    /**
+     * Set the error renderer.
+     * @param Closure|null $renderer The error renderer.
+     */
+    public static function setRenderer(Closure|null $renderer): void
+    {
+        static::$renderer = $renderer;
     }
 
 }
