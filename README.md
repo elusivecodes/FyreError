@@ -83,7 +83,7 @@ Set the error renderer.
 ErrorHandler::setRenderer($renderer);
 ```
 
-The renderer should return a *ClientResponse* or a string.
+The renderer should return a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses) or a string.
 
 
 ## Middleware
