@@ -11,11 +11,11 @@ use Throwable;
  */
 class Exception extends RuntimeException
 {
-
     protected const DEFAULT_CODE = 500;
 
     /**
      * New Exception constructor.
+     *
      * @param string $message The message.
      * @param int|null $code The error code.
      * @param Throwable|null $previous The previous exception.
@@ -24,5 +24,4 @@ class Exception extends RuntimeException
     {
         parent::__construct($message, $code ?? static::DEFAULT_CODE, $previous);
     }
-
 }

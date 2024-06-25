@@ -10,11 +10,11 @@ use Throwable;
  */
 abstract class HttpException extends Exception
 {
-
     protected const DEFAULT_MESSAGE = 'Internal Server Error';
 
     /**
      * New HttpException constructor.
+     *
      * @param string|null $message The message.
      * @param int|null $code The error code.
      * @param Throwable|null $previous The previous exception.
@@ -23,5 +23,4 @@ abstract class HttpException extends Exception
     {
         parent::__construct($message ?? static::DEFAULT_MESSAGE, $code, $previous);
     }
-
 }

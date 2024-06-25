@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class UnauthorizedException extends HttpException
 {
-
     protected const DEFAULT_CODE = 401;
 
     protected const DEFAULT_MESSAGE = 'Unauthorized';
-
 }

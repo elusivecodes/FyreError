@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class GoneException extends HttpException
 {
-
     protected const DEFAULT_CODE = 410;
 
     protected const DEFAULT_MESSAGE = 'Gone';
-
 }

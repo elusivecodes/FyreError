@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class ForbiddenException extends HttpException
 {
-
     protected const DEFAULT_CODE = 403;
 
     protected const DEFAULT_MESSAGE = 'Forbidden';
-
 }

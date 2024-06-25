@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Error\ErrorHandler;
 use Fyre\Error\Exceptions\BadRequestException;
 use Fyre\Error\Exceptions\ConflictException;
 use Fyre\Error\Exceptions\Exception;
@@ -15,61 +16,12 @@ use Fyre\Error\Exceptions\NotFoundException;
 use Fyre\Error\Exceptions\NotImplementedException;
 use Fyre\Error\Exceptions\ServiceUnavailableException;
 use Fyre\Error\Exceptions\UnauthorizedException;
-use Fyre\Error\ErrorHandler;
 use Fyre\Server\ClientResponse;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
 final class ErrorHandlerTest extends TestCase
 {
-
-    public function testRenderer(): void
-    {
-        $ran = false;
-        $renderer = function(Throwable $exception) use (&$ran): string {
-            $ran = true;
-            return $exception->getMessage();
-        };
-
-        ErrorHandler::setRenderer($renderer);
-
-        $this->assertSame(
-            $renderer,
-            ErrorHandler::getRenderer()
-        );
-
-        $exception = new Exception('Error');
-        $response = ErrorHandler::handle($exception);
-
-        $this->assertTrue($ran);
-
-        $this->assertSame(
-            'Error',
-            $response->getBody()
-        );
-    }
-
-    public function testHandle(): void
-    {
-        $exception = new Exception('Error');
-        $response = ErrorHandler::handle($exception);
-
-        $this->assertInstanceOf(
-            ClientResponse::class,
-            $response
-        );
-
-        $this->assertSame(
-            500,
-            $response->getStatusCode()
-        );
-
-        $this->assertSame(
-            '<pre>'.$exception.'</pre>',
-            $response->getBody()
-        );
-    }
-
     public function testBadRequest(): void
     {
         $response = ErrorHandler::handle(new BadRequestException());
@@ -107,6 +59,27 @@ final class ErrorHandlerTest extends TestCase
         $this->assertSame(
             410,
             $response->getStatusCode()
+        );
+    }
+
+    public function testHandle(): void
+    {
+        $exception = new Exception('Error');
+        $response = ErrorHandler::handle($exception);
+
+        $this->assertInstanceOf(
+            ClientResponse::class,
+            $response
+        );
+
+        $this->assertSame(
+            500,
+            $response->getStatusCode()
+        );
+
+        $this->assertSame(
+            '<pre>'.$exception.'</pre>',
+            $response->getBody()
         );
     }
 
@@ -160,6 +133,33 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
+    public function testRenderer(): void
+    {
+        $ran = false;
+        $renderer = function(Throwable $exception) use (&$ran): string {
+            $ran = true;
+
+            return $exception->getMessage();
+        };
+
+        ErrorHandler::setRenderer($renderer);
+
+        $this->assertSame(
+            $renderer,
+            ErrorHandler::getRenderer()
+        );
+
+        $exception = new Exception('Error');
+        $response = ErrorHandler::handle($exception);
+
+        $this->assertTrue($ran);
+
+        $this->assertSame(
+            'Error',
+            $response->getBody()
+        );
+    }
+
     public function testServiceUnavailable(): void
     {
         $response = ErrorHandler::handle(new ServiceUnavailableException());
@@ -184,5 +184,4 @@ final class ErrorHandlerTest extends TestCase
     {
         ErrorHandler::setRenderer(null);
     }
-
 }

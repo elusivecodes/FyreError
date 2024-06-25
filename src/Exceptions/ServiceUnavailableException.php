@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class ServiceUnavailableException extends HttpException
 {
-
     protected const DEFAULT_CODE = 503;
 
     protected const DEFAULT_MESSAGE = 'Service Unavailable';
-
 }

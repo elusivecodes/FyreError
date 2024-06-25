@@ -15,9 +15,9 @@ use Throwable;
  */
 class ErrorHandlerMiddleware extends Middleware
 {
-
     /**
      * Process a ServerRequest.
+     *
      * @param ServerRequest $request The ServerRequest.
      * @param RequestHandler $handler The RequestHandler.
      * @return ClientResponse The ClientResponse.
@@ -30,5 +30,4 @@ class ErrorHandlerMiddleware extends Middleware
             return ErrorHandler::handle($e);
         }
     }
-
 }

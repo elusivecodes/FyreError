@@ -10,11 +10,6 @@ use Fyre\Log\Log;
 use Fyre\Server\ClientResponse;
 use Throwable;
 
-use const E_ERROR;
-use const E_PARSE;
-use const E_USER_ERROR;
-use const PHP_SAPI;
-
 use function array_key_exists;
 use function call_user_func;
 use function error_get_last;
@@ -25,25 +20,29 @@ use function register_shutdown_function;
 use function set_error_handler;
 use function set_exception_handler;
 
+use const E_ERROR;
+use const E_PARSE;
+use const E_USER_ERROR;
+use const PHP_SAPI;
+
 /**
  * ErrorHandler
  */
 abstract class ErrorHandler
 {
-
     protected const FATAL_ERRORS = [
         E_USER_ERROR,
         E_ERROR,
-        E_PARSE
+        E_PARSE,
     ];
+
+    protected static bool $cli = true;
 
     protected static Throwable|null $exception = null;
 
-    protected static Closure|null $renderer = null;
-
     protected static bool $log = false;
 
-    protected static bool $cli = true;
+    protected static Closure|null $renderer = null;
 
     /**
      * Disable CLI output.
@@ -55,6 +54,7 @@ abstract class ErrorHandler
 
     /**
      * Get the current Exception.
+     *
      * @return Throwable|null The current Exception.
      */
     public static function getException(): Throwable|null
@@ -64,6 +64,7 @@ abstract class ErrorHandler
 
     /**
      * Get the error renderer.
+     *
      * @return Closure|null The error renderer.
      */
     public static function getRenderer(): Closure|null
@@ -73,6 +74,7 @@ abstract class ErrorHandler
 
     /**
      * Handle an Exception.
+     *
      * @param Throwable $exception The exception.
      * @return ClientResponse|null The ClientResponse.
      */
@@ -108,7 +110,7 @@ abstract class ErrorHandler
         }
 
         try {
-            $code = $exception->getCode();    
+            $code = $exception->getCode();
             $response = $response->setStatusCode($code);
         } catch (Throwable $e) {
             $response = $response->setStatusCode(500);
@@ -119,7 +121,6 @@ abstract class ErrorHandler
 
     /**
      * Register the error handler.
-     * @param array $options
      */
     public static function register(array $options = []): void
     {
@@ -156,6 +157,7 @@ abstract class ErrorHandler
 
     /**
      * Render an Exception.
+     *
      * @param Throwable $exception The exception.
      */
     public static function render(Throwable $exception): void
@@ -166,11 +168,11 @@ abstract class ErrorHandler
 
     /**
      * Set the error renderer.
+     *
      * @param Closure|null $renderer The error renderer.
      */
     public static function setRenderer(Closure|null $renderer): void
     {
         static::$renderer = $renderer;
     }
-
 }

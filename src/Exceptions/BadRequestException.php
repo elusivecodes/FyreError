@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class BadRequestException extends HttpException
 {
-
     protected const DEFAULT_CODE = 400;
 
     protected const DEFAULT_MESSAGE = 'Bad Request';
-
 }

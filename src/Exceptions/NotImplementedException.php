@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class NotImplementedException extends HttpException
 {
-
     protected const DEFAULT_CODE = 501;
 
     protected const DEFAULT_MESSAGE = 'Not Implemented';
-
 }

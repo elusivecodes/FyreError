@@ -8,16 +8,16 @@ namespace Fyre\Error\Exceptions;
  */
 class ErrorException extends Exception
 {
-
     /**
      * New ErrorException constructor.
+     *
      * @param string $message The message.
      * @param int $code The error code.
      * @param string|null $file The file.
      * @param int|null $line The line.
      * @param Throwable|null $previous The previous exception.
      */
-    public function __construct(string $message = null, int $code = null, string|null $file = null, int|null $line = null, Throwable|null $previous = null)
+    public function __construct(string|null $message = null, int|null $code = null, string|null $file = null, int|null $line = null, Throwable|null $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -29,5 +29,4 @@ class ErrorException extends Exception
             $this->line = $line;
         }
     }
-
 }

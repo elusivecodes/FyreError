@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class NotFoundException extends HttpException
 {
-
     protected const DEFAULT_CODE = 404;
 
     protected const DEFAULT_MESSAGE = 'Not Found';
-
 }

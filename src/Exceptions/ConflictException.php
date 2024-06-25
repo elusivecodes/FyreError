@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class ConflictException extends HttpException
 {
-
     protected const DEFAULT_CODE = 409;
 
     protected const DEFAULT_MESSAGE = 'Conflict';
-
 }

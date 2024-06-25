@@ -14,9 +14,9 @@ use Fyre\Server\ServerRequest;
  */
 class ExceptionMiddleware extends Middleware
 {
-
     /**
      * Process a ServerRequest.
+     *
      * @param ServerRequest $request The ServerRequest.
      * @param RequestHandler $handler The RequestHandler.
      * @return ClientResponse The ClientResponse.
@@ -25,5 +25,4 @@ class ExceptionMiddleware extends Middleware
     {
         throw new Exception('Error');
     }
-
 }

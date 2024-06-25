@@ -8,9 +8,7 @@ namespace Fyre\Error\Exceptions;
  */
 class NotAcceptableException extends HttpException
 {
-
     protected const DEFAULT_CODE = 406;
 
     protected const DEFAULT_MESSAGE = 'Not Acceptable';
-
 }

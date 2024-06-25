@@ -7,12 +7,11 @@ use Fyre\Error\Middleware\ErrorHandlerMiddleware;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
 use Fyre\Server\ServerRequest;
-use Tests\Mock\ExceptionMiddleware;
 use PHPUnit\Framework\TestCase;
+use Tests\Mock\ExceptionMiddleware;
 
 final class ErrorHandlerMiddlewareTest extends TestCase
 {
-
     public function testException(): void
     {
         $queue = new MiddlewareQueue();
@@ -29,5 +28,4 @@ final class ErrorHandlerMiddlewareTest extends TestCase
             $response->getStatusCode()
         );
     }
-
 }

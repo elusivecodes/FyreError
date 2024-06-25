@@ -6,7 +6,4 @@ namespace Fyre\Error\Exceptions;
 /**
  * InternalServerException
  */
-class InternalServerException extends HttpException
-{
-
-}
+class InternalServerException extends HttpException {}
