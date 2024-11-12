@@ -5,6 +5,7 @@
 
 ## Table Of Contents
 - [Installation](#installation)
+- [Basic Usage](#basic-usage)
 - [Methods](#methods)
 - [Middleware](#middleware)
 - [Exceptions](#exceptions)
@@ -27,6 +28,34 @@ use Fyre\Error\ErrorHandler;
 ```
 
 
+## Basic Usage
+
+- `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
+- `$io` is a [*Console*](https://github.com/elusivecodes/FyreConsole).
+- `$logManager` is a [*Logmanager*](https://github.com/elusivecodes/FyreLog).
+- `$config` is a  [*Config*](https://github.com/elusivecodes/FyreConfig).
+
+```php
+$errorHandler = new ErrorHandler($container, $io, $logManager, $config);
+```
+
+Default configuration options will be resolved from the "*Error*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig).
+
+**Autoloading**
+
+It is recommended to bind the *ErrorHandler* to the [*Container*](https://github.com/elusivecodes/FyreContainer) as a singleton.
+
+```php
+$container->singleton(ErrorHandler::class);
+```
+
+Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
+
+```php
+$errorHandler = $container->use(ErrorHandler::class);
+```
+
+
 ## Methods
 
 **Get Exception**
@@ -34,7 +63,7 @@ use Fyre\Error\ErrorHandler;
 Get the current *Exception*.
 
 ```php
-$exception = ErrorHandler::getException();
+$exception = $errorHandler->getException();
 ```
 
 **Get Renderer**
@@ -42,27 +71,15 @@ $exception = ErrorHandler::getException();
 Get the error renderer.
 
 ```php
-$renderer = ErrorHandler::getRenderer();
-```
-
-**Handle**
-
-Handle an *Exception*.
-
-```php
-$response = ErrorHandler::handle($exception);
+$renderer = $errorHandler->getRenderer();
 ```
 
 **Register**
 
 Register the error handler.
 
-- `$options` is an array containing configuration options.
-    - `log` is a boolean indicating whether to log errors, and will default to *false*.
-    - `level` is an integer representing the `error_reporting` level.
-
 ```php
-ErrorHandler::register($options);
+$errorHandler->register();
 ```
 
 **Render**
@@ -70,7 +87,7 @@ ErrorHandler::register($options);
 Render an *Exception*.
 
 ```php
-ErrorHandler::render($exception);
+$response = $errorHandler->render($exception);
 ```
 
 **Set Renderer**
@@ -80,7 +97,7 @@ Set the error renderer.
 - `$renderer` is a *Closure* that accepts an *Exception* as the first argument.
 
 ```php
-ErrorHandler::setRenderer($renderer);
+$errorHandler->setRenderer($renderer);
 ```
 
 The renderer should return a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses) or a string.
@@ -92,17 +109,25 @@ The renderer should return a [*ClientResponse*](https://github.com/elusivecodes/
 use Fyre\Error\Middleware\ErrorHandlerMiddleware;
 ```
 
+- `$errorHandler` is an *ErrorHandler*.
+
 ```php
-$middleware = new ErrorHandlerMiddleware();
+$middleware = new ErrorHandlerMiddleware($errorHandler);
 ```
 
-**Process**
-
-- `$request` is a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests).
-- `$handler` is a [*RequestHandler*](https://github.com/elusivecodes/FyreMiddleware#request-handlers).
+Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 ```php
-$response = $middleware->process($request, $handler);
+$middleware = $container->use(ErrorHandlerMiddleware::class);
+```
+
+**Handle**
+
+- `$request` is a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests).
+- `$next` is a *Closure*.
+
+```php
+$response = $middleware->handle($request, $next);
 ```
 
 This method will return a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).

@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace Fyre\Error;
 
 use Closure;
+use ErrorException;
+use Fyre\Config\Config;
 use Fyre\Console\Console;
-use Fyre\Error\Exceptions\ErrorException;
-use Fyre\Log\Log;
+use Fyre\Container\Container;
+use Fyre\Log\LogManager;
 use Fyre\Server\ClientResponse;
 use Throwable;
 
-use function array_key_exists;
-use function call_user_func;
+use function array_replace;
 use function error_get_last;
 use function error_reporting;
 use function in_array;
@@ -28,7 +29,7 @@ use const PHP_SAPI;
 /**
  * ErrorHandler
  */
-abstract class ErrorHandler
+class ErrorHandler
 {
     protected const FATAL_ERRORS = [
         E_USER_ERROR,
@@ -36,20 +37,42 @@ abstract class ErrorHandler
         E_PARSE,
     ];
 
-    protected static bool $cli = true;
+    protected static array $defaults = [
+        'level' => E_ALL,
+        'renderer' => null,
+        'log' => true,
+        'cli' => true,
+    ];
 
-    protected static Throwable|null $exception = null;
+    protected Container $container;
 
-    protected static bool $log = false;
+    protected Throwable|null $exception = null;
 
-    protected static Closure|null $renderer = null;
+    protected Console $io;
+
+    protected LogManager $logManager;
+
+    protected array $options;
+
+    protected Closure|null $renderer = null;
 
     /**
-     * Disable CLI output.
+     * New ErrorHandler constructor.
+     *
+     * @param Container $container The Container.
+     * @param Console $io The Console.
+     * @param LogManager $logManager The LogManager.
+     * @param Config $config The Config.
      */
-    public static function disableCli(): void
+    public function __construct(Container $container, Console $io, LogManager $logManager, Config $config)
     {
-        static::$cli = false;
+        $this->container = $container;
+        $this->io = $io;
+        $this->logManager = $logManager;
+
+        $this->options = array_replace(static::$defaults, $config->get('Error', []));
+
+        $this->setRenderer($this->options['renderer']);
     }
 
     /**
@@ -57,9 +80,9 @@ abstract class ErrorHandler
      *
      * @return Throwable|null The current Exception.
      */
-    public static function getException(): Throwable|null
+    public function getException(): Throwable|null
     {
-        return static::$exception;
+        return $this->exception;
     }
 
     /**
@@ -67,46 +90,80 @@ abstract class ErrorHandler
      *
      * @return Closure|null The error renderer.
      */
-    public static function getRenderer(): Closure|null
+    public function getRenderer(): Closure|null
     {
-        return static::$renderer;
+        return $this->renderer;
     }
 
     /**
-     * Handle an Exception.
+     * Register the error handler.
+     *
+     * @return ErrorHandler The ErrorHandler.
+     */
+    public function register(): static
+    {
+        error_reporting($this->options['level']);
+
+        register_shutdown_function(function(): void {
+            $error = error_get_last();
+
+            if (!is_array($error) || !in_array($error['type'], static::FATAL_ERRORS)) {
+                return;
+            }
+
+            $exception = new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
+
+            $this->render($exception)->send();
+        });
+
+        set_error_handler(function(int $type, string $message, string $file, int $line): void {
+            $exception = new ErrorException($message, 0, $type, $file, $line);
+
+            $this->render($exception)->send();
+        });
+
+        set_exception_handler(function(Throwable $exception): void {
+            $this->render($exception)->send();
+        });
+
+        return $this;
+    }
+
+    /**
+     * Render an Exception.
      *
      * @param Throwable $exception The exception.
-     * @return ClientResponse|null The ClientResponse.
+     * @return ClientResponse The ClientResponse;
      */
-    public static function handle(Throwable $exception): ClientResponse|null
+    public function render(Throwable $exception): ClientResponse
     {
-        static::$exception = $exception;
+        $this->exception = $exception;
 
-        if (static::$log) {
-            Log::error((string) $exception);
+        if ($this->options['log']) {
+            $this->logManager->handle('error', (string) $exception);
         }
 
-        if (static::$cli && PHP_SAPI === 'cli') {
-            Console::error((string) $exception);
+        if ($this->options['cli'] && PHP_SAPI === 'cli') {
+            $this->io->error((string) $exception);
             exit;
         }
 
         try {
-            if (!static::$renderer) {
+            if (!$this->renderer) {
                 throw $exception;
             }
 
-            $result = call_user_func(static::$renderer, $exception);
+            $result = $this->container->call($this->renderer, ['exception' => $exception]);
 
             if ($result instanceof ClientResponse) {
                 $response = $result;
             } else {
-                $response = new ClientResponse();
-                $response = $response->setBody((string) $result);
+                $response = $this->container->build(ClientResponse::class)
+                    ->setBody((string) $result);
             }
         } catch (Throwable $e) {
-            $response = new ClientResponse();
-            $response = $response->setBody('<pre>'.$e.'</pre>');
+            $response = $this->container->build(ClientResponse::class)
+                ->setBody('<pre>'.$e.'</pre>');
         }
 
         try {
@@ -120,59 +177,15 @@ abstract class ErrorHandler
     }
 
     /**
-     * Register the error handler.
-     */
-    public static function register(array $options = []): void
-    {
-        if (array_key_exists('log', $options)) {
-            static::$log = $options['log'];
-        }
-
-        if (array_key_exists('level', $options)) {
-            error_reporting($options['level']);
-        }
-
-        register_shutdown_function(function(): void {
-            $error = error_get_last();
-
-            if (!is_array($error) || !in_array($error['type'], static::FATAL_ERRORS)) {
-                return;
-            }
-
-            $exception = new ErrorException($error['message'], $error['type'], $error['file'], $error['line']);
-
-            static::render($exception);
-        });
-
-        set_error_handler(function(int $type, string $message, string $file, int $line): void {
-            $exception = new ErrorException($message, $type, $file, $line);
-
-            static::render($exception);
-        });
-
-        set_exception_handler(function(Throwable $exception): void {
-            static::render($exception);
-        });
-    }
-
-    /**
-     * Render an Exception.
-     *
-     * @param Throwable $exception The exception.
-     */
-    public static function render(Throwable $exception): void
-    {
-        static::handle($exception)->send();
-        exit;
-    }
-
-    /**
      * Set the error renderer.
      *
      * @param Closure|null $renderer The error renderer.
+     * @return ErrorHandler The ErrorHandler.
      */
-    public static function setRenderer(Closure|null $renderer): void
+    public function setRenderer(Closure|null $renderer): static
     {
-        static::$renderer = $renderer;
+        $this->renderer = $renderer;
+
+        return $this;
     }
 }

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
+use Fyre\Error\ErrorHandler;
 use Fyre\Error\Middleware\ErrorHandlerMiddleware;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
@@ -12,13 +15,15 @@ use Tests\Mock\ExceptionMiddleware;
 
 final class ErrorHandlerMiddlewareTest extends TestCase
 {
+    protected Container $container;
+
     public function testException(): void
     {
         $queue = new MiddlewareQueue();
         $queue->add(ErrorHandlerMiddleware::class);
         $queue->add(ExceptionMiddleware::class);
 
-        $handler = new RequestHandler($queue);
+        $handler = $this->container->build(RequestHandler::class, ['queue' => $queue]);
         $request = new ServerRequest();
 
         $response = $handler->handle($request);
@@ -27,5 +32,17 @@ final class ErrorHandlerMiddlewareTest extends TestCase
             500,
             $response->getStatusCode()
         );
+    }
+
+    protected function setUp(): void
+    {
+        $this->container = new Container();
+        $this->container->singleton(Config::class);
+        $this->container->singleton(ErrorHandler::class);
+
+        $this->container->use(Config::class)->set('Error', [
+            'log' => false,
+            'cli' => false,
+        ]);
     }
 }

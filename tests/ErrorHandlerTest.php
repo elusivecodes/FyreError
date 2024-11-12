@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Error\ErrorHandler;
 use Fyre\Error\Exceptions\BadRequestException;
 use Fyre\Error\Exceptions\ConflictException;
@@ -22,9 +24,13 @@ use Throwable;
 
 final class ErrorHandlerTest extends TestCase
 {
+    protected Container $container;
+
+    protected ErrorHandler $errorHandler;
+
     public function testBadRequest(): void
     {
-        $response = ErrorHandler::handle(new BadRequestException());
+        $response = $this->errorHandler->render(new BadRequestException());
 
         $this->assertSame(
             400,
@@ -34,7 +40,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testConflict(): void
     {
-        $response = ErrorHandler::handle(new ConflictException());
+        $response = $this->errorHandler->render(new ConflictException());
 
         $this->assertSame(
             409,
@@ -44,7 +50,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testForbidden(): void
     {
-        $response = ErrorHandler::handle(new ForbiddenException());
+        $response = $this->errorHandler->render(new ForbiddenException());
 
         $this->assertSame(
             403,
@@ -54,7 +60,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testGone(): void
     {
-        $response = ErrorHandler::handle(new GoneException());
+        $response = $this->errorHandler->render(new GoneException());
 
         $this->assertSame(
             410,
@@ -65,7 +71,7 @@ final class ErrorHandlerTest extends TestCase
     public function testHandle(): void
     {
         $exception = new Exception('Error');
-        $response = ErrorHandler::handle($exception);
+        $response = $this->errorHandler->render($exception);
 
         $this->assertInstanceOf(
             ClientResponse::class,
@@ -85,7 +91,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testInternalServer(): void
     {
-        $response = ErrorHandler::handle(new InternalServerException());
+        $response = $this->errorHandler->render(new InternalServerException());
 
         $this->assertSame(
             500,
@@ -95,7 +101,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testMethodNotAllowed(): void
     {
-        $response = ErrorHandler::handle(new MethodNotAllowedException());
+        $response = $this->errorHandler->render(new MethodNotAllowedException());
 
         $this->assertSame(
             405,
@@ -105,7 +111,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testNotAcceptable(): void
     {
-        $response = ErrorHandler::handle(new NotAcceptableException());
+        $response = $this->errorHandler->render(new NotAcceptableException());
 
         $this->assertSame(
             406,
@@ -115,7 +121,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testNotFound(): void
     {
-        $response = ErrorHandler::handle(new NotFoundException());
+        $response = $this->errorHandler->render(new NotFoundException());
 
         $this->assertSame(
             404,
@@ -125,7 +131,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testNotImplemented(): void
     {
-        $response = ErrorHandler::handle(new NotImplementedException());
+        $response = $this->errorHandler->render(new NotImplementedException());
 
         $this->assertSame(
             501,
@@ -142,15 +148,18 @@ final class ErrorHandlerTest extends TestCase
             return $exception->getMessage();
         };
 
-        ErrorHandler::setRenderer($renderer);
+        $this->assertSame(
+            $this->errorHandler,
+            $this->errorHandler->setRenderer($renderer)
+        );
 
         $this->assertSame(
             $renderer,
-            ErrorHandler::getRenderer()
+            $this->errorHandler->getRenderer()
         );
 
         $exception = new Exception('Error');
-        $response = ErrorHandler::handle($exception);
+        $response = $this->errorHandler->render($exception);
 
         $this->assertTrue($ran);
 
@@ -162,7 +171,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testServiceUnavailable(): void
     {
-        $response = ErrorHandler::handle(new ServiceUnavailableException());
+        $response = $this->errorHandler->render(new ServiceUnavailableException());
 
         $this->assertSame(
             503,
@@ -172,7 +181,7 @@ final class ErrorHandlerTest extends TestCase
 
     public function testUnauthorized(): void
     {
-        $response = ErrorHandler::handle(new UnauthorizedException());
+        $response = $this->errorHandler->render(new UnauthorizedException());
 
         $this->assertSame(
             401,
@@ -180,8 +189,15 @@ final class ErrorHandlerTest extends TestCase
         );
     }
 
-    protected function tearDown(): void
+    protected function setUp(): void
     {
-        ErrorHandler::setRenderer(null);
+        $this->container = new Container();
+        $this->container->singleton(Config::class);
+        $this->container->use(Config::class)->set('Error', [
+            'log' => false,
+            'cli' => false,
+        ]);
+
+        $this->errorHandler = $this->container->use(ErrorHandler::class);
     }
 }
