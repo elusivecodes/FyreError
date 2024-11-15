@@ -41,6 +41,15 @@ $errorHandler = new ErrorHandler($container, $io, $logManager, $config);
 
 Default configuration options will be resolved from the "*Error*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig).
 
+- `$options` is an array containing the configuration options.
+    - `level` is a number representing the error reporting level, and will default to `E_ALL`.
+    - `renderer` is a *Closure* that will be used to render an *Exception*, and will default to *null*.
+    - `log` is a boolean indicating whether to log exception messages, and will default to *true*.
+
+```php
+$container->use(Config::class)->set('Error', $options);
+```
+
 **Autoloading**
 
 It is recommended to bind the *ErrorHandler* to the [*Container*](https://github.com/elusivecodes/FyreContainer) as a singleton.
