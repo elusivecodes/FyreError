@@ -33,7 +33,7 @@ use Fyre\Error\ErrorHandler;
 - `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
 - `$io` is a [*Console*](https://github.com/elusivecodes/FyreConsole).
 - `$logManager` is a [*Logmanager*](https://github.com/elusivecodes/FyreLog).
-- `$config` is a  [*Config*](https://github.com/elusivecodes/FyreConfig).
+- `$config` is a [*Config*](https://github.com/elusivecodes/FyreConfig).
 
 ```php
 $errorHandler = new ErrorHandler($container, $io, $logManager, $config);

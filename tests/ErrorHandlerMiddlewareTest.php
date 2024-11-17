@@ -24,7 +24,7 @@ final class ErrorHandlerMiddlewareTest extends TestCase
         $queue->add(ExceptionMiddleware::class);
 
         $handler = $this->container->build(RequestHandler::class, ['queue' => $queue]);
-        $request = new ServerRequest();
+        $request = $this->container->build(ServerRequest::class);
 
         $response = $handler->handle($request);
 

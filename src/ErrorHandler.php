@@ -44,15 +44,21 @@ class ErrorHandler
         'cli' => true,
     ];
 
+    protected bool $cli = true;
+
     protected Container $container;
 
     protected Throwable|null $exception = null;
 
     protected Console $io;
 
+    protected int $level = E_ALL;
+
+    protected bool $log = true;
+
     protected LogManager $logManager;
 
-    protected array $options;
+    protected bool $registered = false;
 
     protected Closure|null $renderer = null;
 
@@ -70,9 +76,12 @@ class ErrorHandler
         $this->io = $io;
         $this->logManager = $logManager;
 
-        $this->options = array_replace(static::$defaults, $config->get('Error', []));
+        $options = array_replace(static::$defaults, $config->get('Error', []));
 
-        $this->setRenderer($this->options['renderer']);
+        $this->level = $options['level'];
+        $this->renderer = $options['renderer'];
+        $this->log = $options['log'];
+        $this->cli = $options['cli'];
     }
 
     /**
@@ -97,12 +106,16 @@ class ErrorHandler
 
     /**
      * Register the error handler.
-     *
-     * @return ErrorHandler The ErrorHandler.
      */
-    public function register(): static
+    public function register(): void
     {
-        error_reporting($this->options['level']);
+        if ($this->registered) {
+            return;
+        }
+
+        $this->registered = true;
+
+        error_reporting($this->level);
 
         register_shutdown_function(function(): void {
             $error = error_get_last();
@@ -125,8 +138,6 @@ class ErrorHandler
         set_exception_handler(function(Throwable $exception): void {
             $this->render($exception)->send();
         });
-
-        return $this;
     }
 
     /**
@@ -139,11 +150,11 @@ class ErrorHandler
     {
         $this->exception = $exception;
 
-        if ($this->options['log']) {
+        if ($this->log) {
             $this->logManager->handle('error', (string) $exception);
         }
 
-        if ($this->options['cli'] && PHP_SAPI === 'cli') {
+        if ($this->cli && PHP_SAPI === 'cli') {
             $this->io->error((string) $exception);
             exit;
         }

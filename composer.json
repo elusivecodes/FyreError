@@ -23,8 +23,8 @@
         "fyre/console": "^4.0",
         "fyre/container": "^1.0",
         "fyre/log": "^5.0",
-        "fyre/middleware": "^5.0",
-        "fyre/server": "^3.0"
+        "fyre/middleware": "^6.0",
+        "fyre/server": "^4.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.59",
