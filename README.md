@@ -32,11 +32,12 @@ use Fyre\Error\ErrorHandler;
 
 - `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
 - `$io` is a [*Console*](https://github.com/elusivecodes/FyreConsole).
-- `$logManager` is a [*Logmanager*](https://github.com/elusivecodes/FyreLog).
+- `$logManager` is a [*LogManager*](https://github.com/elusivecodes/FyreLog).
+- `$eventManager` is an [*EventManager*](https://github.com/elusivecodes/FyreEvent).
 - `$config` is a [*Config*](https://github.com/elusivecodes/FyreConfig).
 
 ```php
-$errorHandler = new ErrorHandler($container, $io, $logManager, $config);
+$errorHandler = new ErrorHandler($container, $io, $logManager, $eventManager, $config);
 ```
 
 Default configuration options will be resolved from the "*Error*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig).

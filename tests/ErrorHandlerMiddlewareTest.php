@@ -7,6 +7,7 @@ use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Error\ErrorHandler;
 use Fyre\Error\Middleware\ErrorHandlerMiddleware;
+use Fyre\Event\EventManager;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
 use Fyre\Server\ServerRequest;
@@ -38,6 +39,7 @@ final class ErrorHandlerMiddlewareTest extends TestCase
     {
         $this->container = new Container();
         $this->container->singleton(Config::class);
+        $this->container->singleton(EventManager::class, fn(): EventManager => new EventManager());
         $this->container->singleton(ErrorHandler::class);
 
         $this->container->use(Config::class)->set('Error', [

@@ -8,6 +8,8 @@ use ErrorException;
 use Fyre\Config\Config;
 use Fyre\Console\Console;
 use Fyre\Container\Container;
+use Fyre\Event\EventDispatcherTrait;
+use Fyre\Event\EventManager;
 use Fyre\Log\LogManager;
 use Fyre\Server\ClientResponse;
 use Throwable;
@@ -31,6 +33,8 @@ use const PHP_SAPI;
  */
 class ErrorHandler
 {
+    use EventDispatcherTrait;
+
     protected const FATAL_ERRORS = [
         E_USER_ERROR,
         E_ERROR,
@@ -68,13 +72,15 @@ class ErrorHandler
      * @param Container $container The Container.
      * @param Console $io The Console.
      * @param LogManager $logManager The LogManager.
+     * @param EventManager $eventManager The EventManager.
      * @param Config $config The Config.
      */
-    public function __construct(Container $container, Console $io, LogManager $logManager, Config $config)
+    public function __construct(Container $container, Console $io, LogManager $logManager, EventManager $eventManager, Config $config)
     {
         $this->container = $container;
         $this->io = $io;
         $this->logManager = $logManager;
+        $this->eventManager = $eventManager;
 
         $options = array_replace(static::$defaults, $config->get('Error', []));
 
@@ -153,6 +159,8 @@ class ErrorHandler
         if ($this->log) {
             $this->logManager->handle('error', (string) $exception);
         }
+
+        $this->dispatchEvent('Error.beforeRender', ['exception' => $exception], false);
 
         if ($this->cli && PHP_SAPI === 'cli') {
             $this->io->error((string) $exception);

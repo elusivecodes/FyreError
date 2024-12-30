@@ -18,6 +18,8 @@ use Fyre\Error\Exceptions\NotFoundException;
 use Fyre\Error\Exceptions\NotImplementedException;
 use Fyre\Error\Exceptions\ServiceUnavailableException;
 use Fyre\Error\Exceptions\UnauthorizedException;
+use Fyre\Event\Event;
+use Fyre\Event\EventManager;
 use Fyre\Server\ClientResponse;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -46,6 +48,20 @@ final class ErrorHandlerTest extends TestCase
             409,
             $response->getStatusCode()
         );
+    }
+
+    public function testEventBeforeRender(): void
+    {
+        $ran = false;
+        $this->errorHandler->getEventManager()->on('Error.beforeRender', function(Event $event, Throwable $exception) use (&$ran): void {
+            $ran = true;
+
+            $this->assertInstanceOf(ConflictException::class, $exception);
+        });
+
+        $this->errorHandler->render(new ConflictException());
+
+        $this->assertTrue($ran);
     }
 
     public function testForbidden(): void
@@ -193,6 +209,7 @@ final class ErrorHandlerTest extends TestCase
     {
         $this->container = new Container();
         $this->container->singleton(Config::class);
+        $this->container->singleton(EventManager::class, fn(): EventManager => new EventManager());
         $this->container->use(Config::class)->set('Error', [
             'log' => false,
             'cli' => false,
