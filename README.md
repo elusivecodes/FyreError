@@ -132,6 +132,10 @@ The renderer should return a [*ClientResponse*](https://github.com/elusivecodes/
 
 Unregister the error handler.
 
+```php
+$errorHandler->unregister();
+```
+
 
 ## Middleware
 
