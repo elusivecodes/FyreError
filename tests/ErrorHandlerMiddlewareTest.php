@@ -44,7 +44,13 @@ final class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->container->use(Config::class)->set('Error', [
             'log' => false,
-            'cli' => false,
         ]);
+
+        $this->container->use(ErrorHandler::class)->disableCli();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->container->use(ErrorHandler::class)->unregister();
     }
 }

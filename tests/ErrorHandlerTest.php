@@ -212,9 +212,14 @@ final class ErrorHandlerTest extends TestCase
         $this->container->singleton(EventManager::class);
         $this->container->use(Config::class)->set('Error', [
             'log' => false,
-            'cli' => false,
         ]);
 
         $this->errorHandler = $this->container->use(ErrorHandler::class);
+        $this->errorHandler->disableCli();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->errorHandler->unregister();
     }
 }

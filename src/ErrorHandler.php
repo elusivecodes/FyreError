@@ -62,6 +62,8 @@ class ErrorHandler
 
     protected LogManager $logManager;
 
+    protected int $originalLevel = 0;
+
     protected bool $registered = false;
 
     protected Closure|null $renderer = null;
@@ -87,7 +89,50 @@ class ErrorHandler
         $this->level = $options['level'];
         $this->renderer = $options['renderer'];
         $this->log = $options['log'];
-        $this->cli = $options['cli'];
+
+        register_shutdown_function(function(): void {
+            if (!$this->registered) {
+                return;
+            }
+
+            $error = error_get_last();
+
+            if (!is_array($error) || !in_array($error['type'], static::FATAL_ERRORS)) {
+                return;
+            }
+
+            $exception = new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
+
+            $this->render($exception)->send();
+        });
+    }
+
+    /**
+     * Destroy the ErrorHandler.
+     */
+    public function __destruct()
+    {
+        $this->unregister();
+    }
+
+    /**
+     * Disable CLI error handling.
+     */
+    public function disableCli(): static
+    {
+        $this->cli = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable CLI error handling.
+     */
+    public function enableCli(): static
+    {
+        $this->cli = true;
+
+        return $this;
     }
 
     /**
@@ -121,19 +166,7 @@ class ErrorHandler
 
         $this->registered = true;
 
-        error_reporting($this->level);
-
-        register_shutdown_function(function(): void {
-            $error = error_get_last();
-
-            if (!is_array($error) || !in_array($error['type'], static::FATAL_ERRORS)) {
-                return;
-            }
-
-            $exception = new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
-
-            $this->render($exception)->send();
-        });
+        $this->originalLevel = error_reporting($this->level);
 
         set_error_handler(function(int $type, string $message, string $file, int $line): void {
             $exception = new ErrorException($message, 0, $type, $file, $line);
@@ -206,5 +239,21 @@ class ErrorHandler
         $this->renderer = $renderer;
 
         return $this;
+    }
+
+    /**
+     * Unregister the error handler.
+     */
+    public function unregister(): void
+    {
+        if (!$this->registered) {
+            return;
+        }
+
+        $this->registered = false;
+
+        error_reporting($this->originalLevel);
+        restore_error_handler();
+        restore_exception_handler();
     }
 }

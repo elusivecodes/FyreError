@@ -68,6 +68,22 @@ $errorHandler = $container->use(ErrorHandler::class);
 
 ## Methods
 
+**Disable CLI**
+
+Disable CLI error handling.
+
+```php
+$errorHandler->disableCli();
+```
+
+**Enable CLI**
+
+Enable CLI error handling.
+
+```php
+$errorHandler->enableCli();
+```
+
 **Get Exception**
 
 Get the current *Exception*.
@@ -111,6 +127,10 @@ $errorHandler->setRenderer($renderer);
 ```
 
 The renderer should return a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses) or a string.
+
+**Unregister**
+
+Unregister the error handler.
 
 
 ## Middleware
