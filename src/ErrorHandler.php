@@ -45,7 +45,6 @@ class ErrorHandler
         'level' => E_ALL,
         'renderer' => null,
         'log' => true,
-        'cli' => true,
     ];
 
     protected bool $cli = true;
